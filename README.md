@@ -110,7 +110,17 @@ Everything needed to build the report is in [`powerbi/`](powerbi):
 - Rates are monthly averages; the ECB deposit rate uses the month-end level.
 
 ## Tech stack
-Python (pandas, requests) · SQL (SQLite, CTEs, window functions) · Power BI (Power Query M, DAX, star schema) · GitHub Actions · pytest
+| Tool / library | Used for | Where |
+|---|---|---|
+| **pandas** | cleaning, daily → monthly roll-up, pivot/melt, spreads, MoM / YoY changes | `transform.py`, `extract.py` |
+| **requests** | calling the ECB Data Portal REST API with retries | `extract.py` |
+| **sqlite3** (standard library) | loading the star schema into a SQL database | `load.py` |
+| **matplotlib** | README charts and KPI cards | `make_charts.py` |
+| **pytest** | unit tests for aggregation, spreads and quality checks | `tests/` |
+| **SQL** (SQLite) | CTEs, window functions (`ROW_NUMBER`, rolling averages) | `sql/analysis_queries.sql` |
+| **Power BI** | Power Query M, 25+ DAX measures, star-schema model | `powerbi/` |
+| **Chart.js** (JavaScript) | interactive web dashboard on GitHub Pages | `docs/index.html` |
+| **GitHub Actions** | monthly scheduled refresh + tests | `.github/workflows/` |
 
 ---
 **Author:** Saurabh Khamkar – Data Analyst, capital markets · [GitHub](https://github.com/SaurHub007)
