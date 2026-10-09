@@ -1,0 +1,79 @@
+// =====================================================================
+// Euro Area Markets - DAX measures
+// Model: fact_market_monthly[date_key]  *-1  dim_date[date_key]
+//        fact_market_monthly[series_id] *-1  dim_series[series_id]
+// Mark dim_date as Date table (column: month_start).
+// Create an empty table "_Measures" and add these measures to it.
+// =====================================================================
+
+// ---------- Core -------------------------------------------------------
+Value = AVERAGE ( fact_market_monthly[value] )
+
+Latest Month =
+CALCULATE ( MAX ( dim_date[month_start] ), fact_market_monthly )
+
+Latest Value =
+VAR _lastKey =
+    CALCULATE ( MAX ( fact_market_monthly[date_key] ), ALLSELECTED ( dim_date ) )
+RETURN
+    CALCULATE ( [Value], dim_date[date_key] = _lastKey )
+
+MoM Change =
+VAR _lastKey = CALCULATE ( MAX ( fact_market_monthly[date_key] ), ALLSELECTED ( dim_date ) )
+RETURN CALCULATE ( AVERAGE ( fact_market_monthly[mom_change] ), dim_date[date_key] = _lastKey )
+
+YoY Change =
+VAR _lastKey = CALCULATE ( MAX ( fact_market_monthly[date_key] ), ALLSELECTED ( dim_date ) )
+RETURN CALCULATE ( AVERAGE ( fact_market_monthly[yoy_change] ), dim_date[date_key] = _lastKey )
+
+// ---------- Series-specific KPI cards ---------------------------------
+ECB Deposit Rate % = CALCULATE ( [Latest Value], dim_series[series_id] = "dfr" )
+ESTR % = CALCULATE ( [Latest Value], dim_series[series_id] = "estr" )
+Bund 10Y % = CALCULATE ( [Latest Value], dim_series[series_id] = "de10y" )
+EURUSD = CALCULATE ( [Latest Value], dim_series[series_id] = "eurusd" )
+EURO STOXX 50 = CALCULATE ( [Latest Value], dim_series[series_id] = "sx5e" )
+HICP YoY % = CALCULATE ( [Latest Value], dim_series[series_id] = "hicp" )
+BTP-Bund Spread bps = CALCULATE ( [Latest Value], dim_series[series_id] = "spread_btp_bund" )
+2s10s Slope bps = CALCULATE ( [Latest Value], dim_series[series_id] = "spread_2s10s" )
+Real Deposit Rate % = CALCULATE ( [Latest Value], dim_series[series_id] = "real_dfr" )
+
+// ---------- Time intelligence -----------------------------------------
+Value 12M Ago =
+CALCULATE ( [Value], DATEADD ( dim_date[month_start], -12, MONTH ) )
+
+Value 3M Avg =
+CALCULATE (
+    [Value],
+    DATESINPERIOD ( dim_date[month_start], MAX ( dim_date[month_start] ), -3, MONTH )
+)
+
+YTD Return % =
+VAR _start =
+    CALCULATE ( [Value], STARTOFYEAR ( dim_date[month_start] ) )
+VAR _now = [Value]
+RETURN DIVIDE ( _now - _start, _start ) * 100
+
+Max Since 2015 = CALCULATE ( MAX ( fact_market_monthly[value] ), ALL ( dim_date ) )
+Min Since 2015 = CALCULATE ( MIN ( fact_market_monthly[value] ), ALL ( dim_date ) )
+
+// ---------- Signals & formatting --------------------------------------
+Curve Status =
+IF ( [2s10s Slope bps] < 0, "Inverted", IF ( [2s10s Slope bps] < 50, "Flat", "Steep" ) )
+
+Policy Stance =
+VAR _chg = CALCULATE ( [MoM Change], dim_series[series_id] = "dfr" )
+RETURN SWITCH ( TRUE (), _chg > 0, "Hiking", _chg < 0, "Cutting", "On hold" )
+
+Months Real Rate Negative =
+CALCULATE (
+    COUNTROWS ( fact_market_monthly ),
+    dim_series[series_id] = "real_dfr",
+    fact_market_monthly[value] < 0
+)
+
+KPI Colour =
+// use in conditional formatting (Field value) on KPI cards
+IF ( [MoM Change] >= 0, "#1B7F5A", "#C0392B" )
+
+Last Refreshed =
+"Data to " & FORMAT ( [Latest Month], "MMM YYYY" ) & " | Source: ECB Data Portal"
