@@ -1,0 +1,20 @@
+date_key,series_id,value,mom_change,yoy_change,mom_pct,yoy_pct,series_name,category,unit
+20251201,real_dfr,0.1,0.2,-0.5,,,Real Deposit Rate (DFR - HICP),Policy Rates,%
+20251201,hicp,1.9,-0.2,-0.5,,,HICP Inflation (YoY),Inflation,%
+20260801,spread_btp_bund,80.1,-1.0,-6.3,,,BTP-Bund Spread (IT-DE 10Y),Spreads,bps
+20260801,fr10y,4.0,0.15,0.58,,,France 10Y OAT Yield,Sovereign Yields,%
+20260801,de10y,3.185,0.115,0.511,,,Germany 10Y Bund Yield,Sovereign Yields,%
+20260801,spread_bono_bund,44.5,-1.5,-13.7,,,Bono-Bund Spread (ES-DE 10Y),Spreads,bps
+20260801,es10y,3.63,0.1,0.374,,,Spain 10Y Bono Yield,Sovereign Yields,%
+20260801,spread_oat_bund,81.5,3.5,6.9,,,OAT-Bund Spread (FR-DE 10Y),Spreads,bps
+20260801,it10y,3.986,0.105,0.448,,,Italy 10Y BTP Yield,Sovereign Yields,%
+20260901,eurusd,1.151,-0.008,-0.022,-0.6903,-1.8755,EUR/USD,FX,USD per EUR
+20260901,eurgbp,0.858,0.002,-0.011,0.2336,-1.2658,EUR/GBP,FX,GBP per EUR
+20260901,euribor3m,2.635,0.122,0.608,,,Euribor 3M,Money Market,%
+20260901,eurinr,109.914,-0.739,6.312,-0.6679,6.0925,EUR/INR,FX,INR per EUR
+20260901,sx5e,6316.389,-167.171,908.368,-2.5784,16.7967,EURO STOXX 50 Index,Equity,Index points
+20261001,spread_2s10s,49.4,10.1,-27.6,,,2s10s Curve Slope,Spreads,bps
+20261001,dfr,2.5,0.0,0.5,,,ECB Deposit Facility Rate,Policy Rates,%
+20261001,estr,2.44,0.126,0.513,,,€STR (Euro Short-Term Rate),Money Market,%
+20261001,yc10y,3.523,0.034,0.81,,,Euro AAA Curve 10Y,Yield Curve,%
+20261001,yc2y,3.029,-0.067,1.086,,,Euro AAA Curve 2Y,Yield Curve,%

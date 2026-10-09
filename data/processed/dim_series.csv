@@ -1,0 +1,20 @@
+series_id,series_name,category,unit,ecb_key,is_derived
+dfr,ECB Deposit Facility Rate,Policy Rates,%,FM/D.U2.EUR.4F.KR.DFR.LEV,False
+estr,€STR (Euro Short-Term Rate),Money Market,%,EST/B.EU000A2X2A25.WT,False
+euribor3m,Euribor 3M,Money Market,%,FM/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA,False
+de10y,Germany 10Y Bund Yield,Sovereign Yields,%,IRS/M.DE.L.L40.CI.0000.EUR.N.Z,False
+fr10y,France 10Y OAT Yield,Sovereign Yields,%,IRS/M.FR.L.L40.CI.0000.EUR.N.Z,False
+it10y,Italy 10Y BTP Yield,Sovereign Yields,%,IRS/M.IT.L.L40.CI.0000.EUR.N.Z,False
+es10y,Spain 10Y Bono Yield,Sovereign Yields,%,IRS/M.ES.L.L40.CI.0000.EUR.N.Z,False
+yc2y,Euro AAA Curve 2Y,Yield Curve,%,YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_2Y,False
+yc10y,Euro AAA Curve 10Y,Yield Curve,%,YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y,False
+eurusd,EUR/USD,FX,USD per EUR,EXR/M.USD.EUR.SP00.A,False
+eurgbp,EUR/GBP,FX,GBP per EUR,EXR/M.GBP.EUR.SP00.A,False
+eurinr,EUR/INR,FX,INR per EUR,EXR/M.INR.EUR.SP00.A,False
+sx5e,EURO STOXX 50 Index,Equity,Index points,FM/M.U2.EUR.DS.EI.DJES50I.HSTA,False
+hicp,HICP Inflation (YoY),Inflation,%,ICP/M.U2.N.000000.4.ANR,False
+spread_2s10s,2s10s Curve Slope,Spreads,bps,derived,True
+spread_btp_bund,BTP-Bund Spread (IT-DE 10Y),Spreads,bps,derived,True
+spread_oat_bund,OAT-Bund Spread (FR-DE 10Y),Spreads,bps,derived,True
+spread_bono_bund,Bono-Bund Spread (ES-DE 10Y),Spreads,bps,derived,True
+real_dfr,Real Deposit Rate (DFR - HICP),Policy Rates,%,derived,True
