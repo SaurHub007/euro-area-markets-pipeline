@@ -1,0 +1,193 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Euro Area Markets Dashboard</title><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Live dashboard: euro-area rates, yields, spreads, FX and equity from the ECB Data Portal">
+<script src="chart.umd.js"></script>
+<script src="data.js"></script>
+<style>
+:root{--blue:#003299;--gold:#FFB400;--green:#1B7F5A;--red:#C0392B;--ink:#1F2937;--mut:#6B7280;--line:#E5E7EB;--bg:#F3F4F6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:100vw;min-width:1150px;height:100vh;min-height:680px;overflow:auto;font-family:"Segoe UI",Inter,Arial,sans-serif;background:var(--bg);color:var(--ink);position:relative}
+#app{position:absolute;inset:0;display:flex;flex-direction:column}
+header{height:58px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 22px;gap:18px}
+.logo{width:34px;height:34px;border-radius:8px;background:var(--blue);display:grid;place-items:center;color:var(--gold);font-weight:800;font-size:18px}
+header h1{font-size:19px;color:var(--blue);font-weight:700}
+header .sub{font-size:12px;color:var(--mut)}
+.slicer{margin-left:auto;display:flex;gap:6px;align-items:center;font-size:12px;color:var(--mut)}
+.chip{cursor:pointer;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font-size:12px}
+.chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+main{flex:1;padding:14px 18px 8px;position:relative}
+.page{position:absolute;inset:14px 18px 8px;display:none;gap:12px}
+.page.on{display:grid}
+.card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 14px;position:relative}
+.card h3{font-size:13px;color:var(--blue);font-weight:600;margin-bottom:4px}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.kpi{text-align:center;padding:10px 6px}
+.kpi .l{font-size:12px;color:var(--mut)}
+.kpi .v{font-size:26px;font-weight:700;color:var(--blue);margin:3px 0}
+.kpi .c{font-size:11.5px}
+.up{color:var(--green)}.dn{color:var(--red)}
+.cv{position:relative}
+#p0{grid-template-rows:96px 1fr;}
+#p0 .row2{display:grid;grid-template-columns:3fr 1fr;gap:12px;min-height:0}
+.stack{display:grid;grid-template-rows:1fr 1fr 1fr;gap:12px}
+.big{font-size:24px;font-weight:700;margin-top:6px}
+.small{font-size:11.5px;color:var(--mut);margin-top:4px}
+#p1,#p2,#p3{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.span2{grid-column:span 2}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;}th.n{text-align:right;}th{color:var(--mut);font-weight:600;border-bottom:1px solid var(--line);padding:5px 4px}
+td{padding:5px 4px;border-bottom:1px solid #F3F4F6}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+footer{height:38px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:flex-end;padding:0 18px;gap:2px}
+.tab{cursor:pointer;padding:8px 16px;font-size:12.5px;color:var(--mut);border:1px solid transparent;border-bottom:none;border-radius:6px 6px 0 0}
+.tab.on{background:var(--bg);color:var(--blue);font-weight:600;border-color:var(--line)}
+.src{margin-left:auto;align-self:center;font-size:11px;color:var(--mut)}
+/* overlays */
+.scene{position:absolute;inset:0;background:linear-gradient(135deg,#001a5c,#003299 60%,#0b47c4);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .6s;z-index:20;text-align:center}
+.scene.on{opacity:1}
+.scene h1{font-size:46px;font-weight:800;letter-spacing:-.5px}
+.scene h2{font-size:22px;font-weight:400;opacity:.9;margin-top:10px}
+.scene .tag{margin-top:26px;display:flex;gap:10px}
+.scene .tag span{border:1px solid rgba(255,255,255,.4);padding:6px 14px;border-radius:20px;font-size:15px}
+.stars{position:absolute;top:60px;font-size:28px;color:var(--gold);letter-spacing:10px}
+.flow{display:flex;align-items:center;gap:14px;margin-top:34px}
+.box{background:#fff;color:var(--ink);border-radius:10px;padding:14px 16px;width:184px;opacity:0;transform:translateY(16px);transition:all .5s}
+.box.on{opacity:1;transform:none}
+.box b{display:block;color:var(--blue);font-size:16px;margin-bottom:4px}
+.box small{font-size:12.5px;color:#4B5563;line-height:1.35;display:block}
+.arrow{color:var(--gold);font-size:28px;opacity:0;transition:opacity .4s}
+.arrow.on{opacity:1}
+#caption{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);background:rgba(17,24,39,.88);color:#fff;font-size:19px;padding:10px 22px;border-radius:8px;max-width:1100px;text-align:center;z-index:30;opacity:0;transition:opacity .35s}
+#caption.on{opacity:1}
+#caption b{color:var(--gold)}
+#cursor{position:absolute;width:22px;height:22px;z-index:40;left:1320px;top:760px;transition:left .7s cubic-bezier(.4,0,.2,1),top .7s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#ripple{position:absolute;width:40px;height:40px;border-radius:50%;border:3px solid var(--gold);z-index:39;opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.3)}
+#ripple.go{animation:rip .5s ease-out}
+@keyframes rip{0%{opacity:1;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}}
+.hl{outline:3px solid var(--gold);outline-offset:2px;transition:outline-color .3s}
+</style></head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">€</div>
+    <div><h1>Euro Area Markets Dashboard</h1><div class="sub" id="asof">Data to Oct 2026 · Source: ECB Data Portal</div></div>
+    <div class="slicer">Period:
+      <span class="chip on" id="r0">2015 – 2026</span><span class="chip" id="r1">Last 5Y</span><span class="chip" id="r2">Last 2Y</span>
+    </div>
+  </header>
+  <main>
+    <!-- Page 0 -->
+    <section class="page on" id="p0">
+      <div class="kpis" id="kpis"></div>
+      <div class="row2">
+        <div class="card"><h3>ECB policy rate vs money market vs inflation (%)</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c0"></canvas></div></div>
+        <div class="stack">
+          <div class="card"><h3>Policy Stance</h3><div class="big" id="stance"></div><div class="small" id="stanceS"></div></div>
+          <div class="card"><h3>Yield Curve (2s10s)</h3><div class="big" id="curve"></div><div class="small" id="curveS"></div></div>
+          <div class="card"><h3>Real Deposit Rate</h3><div class="big" id="real"></div><div class="small" id="realS">DFR minus HICP</div></div>
+        </div>
+      </div>
+    </section>
+    <!-- Page 1 -->
+    <section class="page" id="p1">
+      <div class="card span2"><h3>Euro AAA yield curve: 2Y vs 10Y (%)</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c1a"></canvas></div></div>
+      <div class="card"><h3>2s10s slope (bps) · red = inverted</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c1b"></canvas></div></div>
+      <div class="card"><h3>Real deposit rate: DFR − HICP (%)</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c1c"></canvas></div></div>
+    </section>
+    <!-- Page 2 -->
+    <section class="page" id="p2">
+      <div class="card"><h3>10Y government bond yields (%)</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c2a"></canvas></div></div>
+      <div class="card"><h3>Spreads vs German Bund (bps)</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c2b"></canvas></div></div>
+      <div class="card span2"><h3>Sovereign scorecard</h3><table id="tbl"></table></div>
+    </section>
+    <!-- Page 3 -->
+    <section class="page" id="p3">
+      <div class="card span2"><h3>EURO STOXX 50 index</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c3a"></canvas></div></div>
+      <div class="card"><h3>EUR/USD with 3M average</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c3b"></canvas></div></div>
+      <div class="card"><h3>EUR/INR</h3><div class="cv" style="height:calc(100% - 22px)"><canvas id="c3c"></canvas></div></div>
+    </section>
+  </main>
+  <footer>
+    <div class="tab on" id="t0">Executive Overview</div><div class="tab" id="t1">Rates &amp; Yield Curve</div>
+    <div class="tab" id="t2">Sovereign Spreads</div><div class="tab" id="t3">FX &amp; Equity</div>
+    <div class="src">Refreshed monthly by GitHub Actions · github.com/SaurHub007/euro-area-markets-pipeline</div>
+  </footer>
+</div>
+
+<script>
+let M=DATA.months;const C={blue:"#003299",gold:"#FFB400",green:"#1B7F5A",red:"#C0392B",purple:"#5C6BC0",grey:"#6B7280"};
+Chart.defaults.font.family='"Segoe UI",Inter,Arial,sans-serif';Chart.defaults.font.size=11;Chart.defaults.color="#4B5563";
+Chart.defaults.plugins.legend.labels.boxWidth=12;Chart.defaults.animation.duration=900;
+Chart.defaults.elements.point.radius=0;Chart.defaults.elements.line.borderWidth=2;
+let start=0;const charts={};
+const sl=k=>DATA[k].slice(start), lab=()=>M.slice(start);
+function opts(extra={}){return Object.assign({responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+ plugins:{legend:{position:"top",align:"end"},tooltip:{backgroundColor:"rgba(17,24,39,.92)",padding:9,titleFont:{size:12},bodyFont:{size:12}}},
+ scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8,maxRotation:0}},y:{grid:{color:"#EEF0F3"}}}},extra)}
+const ds=(k,label,color,extra={})=>Object.assign({label,data:sl(k),borderColor:color,backgroundColor:color,spanGaps:true,tension:.15},extra);
+function ma3(a){return a.map((v,i)=>i<2||v==null?null:+((a[i]+a[i-1]+a[i-2])/3).toFixed(3))}
+function build(){
+ for(const k in charts)charts[k].destroy();
+ charts.c0=new Chart(c0,{type:"line",data:{labels:lab(),datasets:[ds("dfr","ECB Deposit Rate",C.blue,{stepped:true,borderWidth:3}),ds("estr","€STR",C.purple),ds("euribor3m","Euribor 3M",C.gold),ds("hicp","HICP inflation YoY",C.red,{borderDash:[5,4]})]},options:opts()});
+ charts.c1a=new Chart(c1a,{type:"line",data:{labels:lab(),datasets:[ds("yc2y","AAA 2Y",C.gold),ds("yc10y","AAA 10Y",C.blue)]},options:opts()});
+ const s=sl("spread_2s10s");
+ charts.c1b=new Chart(c1b,{type:"bar",data:{labels:lab(),datasets:[{label:"2s10s (bps)",data:s,backgroundColor:s.map(v=>v<0?C.red:"#7FB8A0"),barPercentage:1,categoryPercentage:1}]},options:opts({plugins:{legend:{display:false},tooltip:opts().plugins.tooltip}})});
+ const r=sl("real_dfr");
+ charts.c1c=new Chart(c1c,{type:"line",data:{labels:lab(),datasets:[ds("real_dfr","Real DFR",C.purple,{fill:{target:"origin",above:"rgba(27,127,90,.25)",below:"rgba(192,57,43,.22)"}})]},options:opts({plugins:{legend:{display:false},tooltip:opts().plugins.tooltip}})});
+ charts.c2a=new Chart(c2a,{type:"line",data:{labels:lab(),datasets:[ds("de10y","Germany",C.grey),ds("fr10y","France",C.blue),ds("it10y","Italy",C.green),ds("es10y","Spain",C.gold)]},options:opts()});
+ charts.c2b=new Chart(c2b,{type:"line",data:{labels:lab(),datasets:[ds("spread_btp_bund","Italy − Germany",C.red),ds("spread_oat_bund","France − Germany",C.blue),ds("spread_bono_bund","Spain − Germany",C.gold)]},options:opts()});
+ charts.c3a=new Chart(c3a,{type:"line",data:{labels:lab(),datasets:[ds("sx5e","EURO STOXX 50",C.blue,{fill:{target:"origin"},backgroundColor:"rgba(0,50,153,.08)"})]},options:opts({plugins:{legend:{display:false},tooltip:opts().plugins.tooltip}})});
+ charts.c3b=new Chart(c3b,{type:"line",data:{labels:lab(),datasets:[ds("eurusd","EUR/USD",C.gold),{label:"3M avg",data:ma3(DATA.eurusd).slice(start),borderColor:C.blue,borderWidth:1.5,borderDash:[4,3],spanGaps:true}]},options:opts()});
+ charts.c3c=new Chart(c3c,{type:"line",data:{labels:lab(),datasets:[ds("eurinr","EUR/INR",C.green)]},options:opts({plugins:{legend:{display:false},tooltip:opts().plugins.tooltip}})});
+ kpis();table();
+}
+function last(k){const a=DATA[k];for(let i=a.length-1;i>=0;i--)if(a[i]!=null){let j=i-1;while(j>=0&&a[j]==null)j--;return{v:a[i],p:a[j],m:M[i],i}}}
+function mon(m){const d=new Date(m+"-01");return d.toLocaleString("en-US",{month:"short",year:"numeric"})}
+function kpis(){
+ const defs=[["dfr","ECB Deposit Rate",v=>v.toFixed(2)+"%",2],["estr","€STR",v=>v.toFixed(2)+"%",3],["de10y","Bund 10Y",v=>v.toFixed(2)+"%",3],["spread_btp_bund","BTP-Bund",v=>v.toFixed(0)+" bps",0],["eurusd","EUR/USD",v=>v.toFixed(3),3],["sx5e","EURO STOXX 50",v=>Math.round(v).toLocaleString("en"),0]];
+ kpis_el=document.getElementById("kpis");kpis_el.innerHTML=defs.map(([k,l,f,d])=>{const x=last(k),ch=x.v-x.p;return `<div class="card kpi"><div class="l">${l}</div><div class="v">${f(x.v)}</div><div class="c ${ch>=0?"up":"dn"}">${ch>=0?"▲":"▼"} ${(ch>=0?"+":"")+ch.toFixed(d)} MoM · ${mon(x.m)}</div></div>`}).join("");
+ const a=DATA.dfr.filter(v=>v!=null),d=a[a.length-1];let j=a.length-1;while(j>0&&a[j-1]===d)j--;const prev=j>0?a[j-1]:d,sm=M[DATA.dfr.lastIndexOf(d,DATA.dfr.length-1)-(a.length-1-j)];
+ const st=d>prev?"Hiking":d<prev?"Cutting":"On hold";stance.textContent=st;stance.className="big "+(st==="Hiking"?"up":st==="Cutting"?"dn":"");stanceS.textContent="Last move: "+prev.toFixed(2)+"% → "+d.toFixed(2)+"% ("+mon(sm)+")";
+ const c=last("spread_2s10s");curve.textContent=c.v<0?"Inverted":c.v<50?"Flat":"Steep";curve.className="big "+(c.v<0?"dn":"up");curveS.textContent=c.v.toFixed(0)+" bps · "+mon(c.m);
+ const r=last("real_dfr");real.textContent=(r.v>=0?"+":"")+r.v.toFixed(2)+"%";real.className="big "+(r.v>=0?"up":"dn");realS.textContent="DFR minus HICP · latest "+mon(r.m);
+}
+function table(){
+ const rows=[["Germany","de10y",null],["France","fr10y","spread_oat_bund"],["Italy","it10y","spread_btp_bund"],["Spain","es10y","spread_bono_bund"]];
+ const mx=k=>Math.max(...DATA[k].filter(v=>v!=null));
+ tbl.innerHTML="<tr><th>Country</th><th class=n>10Y yield</th><th class=n>MoM</th><th class=n>Spread vs Bund</th><th class=n>Peak spread since 2015</th><th>As of</th></tr>"+rows.map(([n,y,s])=>{const a=last(y),ch=a.v-a.p;return `<tr><td>${n}</td><td class=n>${a.v.toFixed(2)}%</td><td class="n ${ch>=0?"dn":"up"}">${(ch>=0?"+":"")+ch.toFixed(2)}</td><td class=n>${s?last(s).v.toFixed(0)+" bps":"—"}</td><td class=n>${s?mx(s).toFixed(0)+" bps":"—"}</td><td>${mon(a.m)}</td></tr>`}).join("");
+}
+// ---- video controls ----
+window.V={
+ scene(id){document.querySelectorAll(".scene").forEach(s=>s.classList.toggle("on",s.id===id))},
+ flowStep(i){if(i<5)document.getElementById("b"+i).classList.add("on");if(i>0&&i<5)document.getElementById("a"+(i-1)).classList.add("on");if(i===5)flowNote.style.opacity=1},
+ cap(t,top){const c=document.getElementById("caption");if(!t){c.classList.remove("on");return}c.innerHTML=t;c.style.bottom=top?"auto":"52px";c.style.top=top?"64px":"auto";c.classList.add("on")},
+ cursorTo(sel,dx=0,dy=0){const r=(typeof sel==="string"?document.querySelector(sel):sel).getBoundingClientRect();cursor.style.left=(r.left+r.width/2+dx)+"px";cursor.style.top=(r.top+r.height/2+dy)+"px"},
+ cursorXY(x,y){cursor.style.left=x+"px";cursor.style.top=y+"px"},
+ click(){const r=cursor.getBoundingClientRect();ripple.style.left=(r.left+3)+"px";ripple.style.top=(r.top+3)+"px";ripple.classList.remove("go");void ripple.offsetWidth;ripple.classList.add("go")},
+ page(i){document.querySelectorAll(".page").forEach((p,j)=>p.classList.toggle("on",j===i));document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("on",j===i));Object.values(charts).forEach(c=>{c.reset();c.update()})},
+ range(k){document.querySelectorAll(".chip").forEach((c,j)=>c.classList.toggle("on",j===k));start=[0,M.length-60,M.length-24][k];build()},
+ hl(sel,on=true){document.querySelector(sel).classList.toggle("hl",on)},
+ tip(id,month){const ch=charts[id];const i=ch.data.labels.indexOf(month);const els=ch.data.datasets.map((d,j)=>({datasetIndex:j,index:i})).filter(e=>ch.data.datasets[e.datasetIndex].data[i]!=null);
+  ch.setActiveElements(els);ch.tooltip.setActiveElements(els,{x:0,y:0});ch.update();const m=ch.getDatasetMeta(els[0].datasetIndex).data[i];const r=ch.canvas.getBoundingClientRect();V.cursorXY(r.left+m.x,r.top+m.y)},
+ untip(id){const ch=charts[id];ch.setActiveElements([]);ch.tooltip.setActiveElements([],{x:0,y:0});ch.update()}
+};
+
+document.querySelectorAll(".tab").forEach((t,i)=>t.onclick=()=>V.page(i));
+document.querySelectorAll(".chip").forEach((c,i)=>c.onclick=()=>V.range(i));
+async function liveData(){
+ try{
+  const r=await fetch("https://raw.githubusercontent.com/SaurHub007/euro-area-markets-pipeline/main/data/processed/fact_market_monthly.csv",{cache:"no-store"});
+  if(!r.ok)throw 0;
+  const rows=(await r.text()).trim().split(/\r?\n/).slice(1).map(l=>l.split(","));
+  const months=[...new Set(rows.map(x=>x[0].slice(0,4)+"-"+x[0].slice(4,6)))].sort();
+  const idx=Object.fromEntries(months.map((m,i)=>[m,i])),D={months};
+  for(const x of rows){const k=x[1];(D[k]=D[k]||Array(months.length).fill(null))[idx[x[0].slice(0,4)+"-"+x[0].slice(4,6)]]=x[2]===""?null:+x[2]}
+  for(const k in D)if(k!=="months"&&D[k].length<months.length)D[k].length=months.length;
+  Object.assign(DATA,D);M=DATA.months;
+ }catch(e){console.log("using bundled snapshot")}
+ const L=M[M.length-1];asof.textContent="Data to "+mon(L)+" · Source: ECB Data Portal · auto-refreshed monthly";
+ build();
+}
+liveData();
+</script>
+</body></html>
