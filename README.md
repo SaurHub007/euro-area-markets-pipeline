@@ -2,6 +2,9 @@
 
 An end-to-end data pipeline that pulls **euro-area rates, sovereign yields, FX, equity and inflation data** from the **ECB Data Portal API**, validates it, models it as a **star schema**, and feeds a **Power BI dashboard** that refreshes automatically.
 
+### 🔴 Live dashboard: **[saurhub007.github.io/euro-area-markets-pipeline](https://saurhub007.github.io/euro-area-markets-pipeline/)**
+Click through 4 pages, change the period slicer and hover any chart. It reads the latest pipeline output from this repo, so it updates every time the monthly refresh runs.
+
 ### Dashboard walkthrough
 ![Dashboard walkthrough](docs/images/dashboard_walkthrough.gif)
 
