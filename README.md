@@ -2,6 +2,12 @@
 
 An end-to-end data pipeline that pulls **euro-area rates, sovereign yields, FX, equity and inflation data** from the **ECB Data Portal API**, validates it, models it as a **star schema**, and feeds a **Power BI dashboard** that refreshes automatically.
 
+### Dashboard walkthrough
+![Dashboard walkthrough](docs/images/dashboard_walkthrough.gif)
+
+▶ **[Full HD video (MP4, 87 s)](docs/dashboard_walkthrough.mp4)**: KPI cards, period slicer, rates & yield curve, sovereign spreads, FX & equity.
+*The walkthrough shows an HTML replica of the report built on the same star schema and measures as the Power BI model in [`powerbi/`](powerbi).*
+
 ![KPI cards](docs/images/kpi_cards.png)
 ![Dashboard preview](docs/images/dashboard_preview.png)
 
