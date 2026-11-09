@@ -23,6 +23,8 @@ jobs:
       - run: python make_charts.py
       - name: Build monthly report
         run: python monthly_report.py
+      - name: Statistical analysis
+        run: python stats_analysis.py
       - name: Commit refreshed data
         run: |
           git config user.name "github-actions[bot]"
