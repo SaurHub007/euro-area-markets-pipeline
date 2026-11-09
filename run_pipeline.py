@@ -24,6 +24,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--offline", action="store_true", help="use data/raw snapshot instead of the API")
     parser.add_argument("--start", default="2015-01-01", help="first period to download (live mode)")
+    parser.add_argument("--include-current-month", action="store_true",
+                        help="keep the current, still incomplete month (off by default)")
     parser.add_argument("--strict", action="store_true", help="exit non-zero if any DQ check fails")
     args = parser.parse_args()
 
@@ -40,6 +42,11 @@ def main() -> int:
 
     # 2. Transform
     wide = transform.to_monthly(raw)
+    if not args.include_current_month:
+        before = len(wide)
+        wide = transform.drop_incomplete_months(wide)
+        if len(wide) < before:
+            log.info("Transform: dropped the current incomplete month")
     if not args.offline:  # refresh the snapshot so the offline mode stays current
         wide.reset_index().assign(month=lambda d: d["month_start"].dt.strftime("%Y-%m")) \
             .drop(columns="month_start").set_index("month").reset_index() \

@@ -31,7 +31,8 @@ Raw daily / monthly observations
 Star schema ──► data/processed/*.csv  ──► Power BI (Power Query from GitHub raw URLs)
             └─► data/euro_markets.db  ──► SQL analysis (sql/analysis_queries.sql)
 
-GitHub Actions (monthly cron) re-runs the pipeline and commits fresh data
+GitHub Actions (monthly cron, 10th) re-runs the pipeline, commits fresh data
+and posts a monthly report (reports/YYYY-MM.md) as a GitHub issue
 ```
 
 ## Data covered (Jan 2015 → latest)
@@ -61,8 +62,9 @@ dim_series (series_id, series_name, category, unit, ecb_key, is_derived)
 
 ## Key insights from the data
 - **Hiking cycle:** the ECB moved the deposit rate from **-0.50% to 4.00%** between Jul 2022 and Sep 2023, its fastest tightening on record, then cut back to 2.00% by mid-2025.
+- **2026 re-tightening:** after a year on hold at 2.00%, the energy-price shock pushed the ECB to hike again, to **2.25% (Jun 2026)** and **2.50% (Sep 2026)**, then hold in Oct 2026.
 - **Curve inversion:** the AAA 2s10s slope was **inverted from late 2022 to mid-2024** (low around **-54 bps**), a classic late-cycle signal.
-- **Periphery risk:** the BTP-Bund spread peaked at **~308 bps (Nov 2018)** during the Italian budget standoff and has since compressed to **~80 bps**. By Aug 2026 the **OAT-Bund spread (~82 bps) is at or above BTP-Bund**, showing how much French risk has been repriced.
+- **Periphery risk:** the BTP-Bund spread peaked at **~308 bps (Nov 2018)** during the Italian budget standoff and has since compressed to **~80 bps**. By Sep 2026 the **OAT-Bund spread (~97 bps) is above BTP-Bund (~89 bps)**, showing how much French risk has been repriced.
 - **Real rates:** the real deposit rate (DFR − HICP) was negative in **106 of 132 months** since 2015.
 - **Equities:** EURO STOXX 50 roughly **doubled** from its 2020 Covid low to above 6,000 in 2026.
 
@@ -106,7 +108,8 @@ Everything needed to build the report is in [`powerbi/`](powerbi):
 
 ## Notes
 - Source: [ECB Data Portal](https://data.ecb.europa.eu/) – free, no API key.
-- HICP headline (`ICP/M.U2.N.000000.4.ANR`) currently ends at Dec 2025 on the API; the quality check flags it as stale instead of failing silently.
+- HICP headline: the ECB discontinued its old `ICP` dataset in Feb 2026 (last value Dec 2025). The pipeline now reads the new `HICP` dataset and splices the old series in for earlier history (`fallback_keys` in `config.py`).
+- The current month is dropped by default because it is still incomplete (use `--include-current-month` to keep it). The refresh runs on the 10th so last month's bond yields are already published.
 - Rates are monthly averages; the ECB deposit rate uses the month-end level.
 
 ## Tech stack
