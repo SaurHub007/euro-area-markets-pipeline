@@ -12,7 +12,7 @@ eurusd,EUR/USD,FX,USD per EUR,EXR/M.USD.EUR.SP00.A,False
 eurgbp,EUR/GBP,FX,GBP per EUR,EXR/M.GBP.EUR.SP00.A,False
 eurinr,EUR/INR,FX,INR per EUR,EXR/M.INR.EUR.SP00.A,False
 sx5e,EURO STOXX 50 Index,Equity,Index points,FM/M.U2.EUR.DS.EI.DJES50I.HSTA,False
-hicp,HICP Inflation (YoY),Inflation,%,ICP/M.U2.N.000000.4.ANR,False
+hicp,HICP Inflation (YoY),Inflation,%,HICP/M.U2.N.000000.4D0.ANR,False
 spread_2s10s,2s10s Curve Slope,Spreads,bps,derived,True
 spread_btp_bund,BTP-Bund Spread (IT-DE 10Y),Spreads,bps,derived,True
 spread_oat_bund,OAT-Bund Spread (FR-DE 10Y),Spreads,bps,derived,True
