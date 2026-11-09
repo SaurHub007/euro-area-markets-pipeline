@@ -52,3 +52,30 @@ def test_quality_flags_out_of_range():
     wide = pd.DataFrame({"eurusd": [1.1, 9.9]}, index=idx)
     issues = quality.run_checks(wide)
     assert any("eurusd" in i and "outside" in i for i in issues)
+
+
+def test_drop_incomplete_month():
+    idx = pd.date_range("2026-09-01", periods=3, freq="MS")  # Sep, Oct, Nov
+    wide = pd.DataFrame({"dfr": [2.5, 2.5, 2.5]}, index=idx)
+    out = transform.drop_incomplete_months(wide, today="2026-11-03")
+    assert list(out.index.strftime("%Y-%m")) == ["2026-09", "2026-10"]
+
+
+def test_splice_prefers_new_key_and_keeps_old_history():
+    from euro_markets import extract
+
+    new = pd.DataFrame({"period": ["2025-12", "2026-01"], "value": [2.0, 1.7]})
+    old = pd.DataFrame({"period": ["2025-11", "2025-12"], "value": [2.1, 1.9]})
+    out = extract.splice([new, old])
+    assert list(out["period"]) == ["2025-11", "2025-12", "2026-01"]
+    assert out.loc[out["period"] == "2025-12", "value"].item() == 2.0
+
+
+def test_monthly_report_labels():
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    import monthly_report
+
+    assert monthly_report.policy_stance(pd.Series([2.25, 2.5])) == "Hiking"
+    assert monthly_report.policy_stance(pd.Series([2.5, 2.5])) == "On hold"
+    assert monthly_report.curve_status(-10) == "Inverted"
+    assert monthly_report.curve_status(42) == "Flat"
