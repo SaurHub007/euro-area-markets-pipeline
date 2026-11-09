@@ -2,11 +2,12 @@ name: Refresh ECB data
 
 on:
   schedule:
-    - cron: "0 6 3 * *"   # 06:00 UTC on the 3rd of every month
+    - cron: "0 6 10 * *"  # 06:00 UTC on the 10th - gives the ECB time to publish last month's bond yields
   workflow_dispatch:       # manual "Run workflow" button
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   refresh:
@@ -20,10 +21,22 @@ jobs:
       - run: pytest -q
       - run: python run_pipeline.py
       - run: python make_charts.py
+      - name: Build monthly report
+        run: python monthly_report.py
       - name: Commit refreshed data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/raw data/processed docs/images
+          git add data/raw data/processed docs/images reports
           git diff --staged --quiet || git commit -m "chore: monthly ECB data refresh"
           git push
+      - name: Post report as an issue (you get it by email)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="$(cat reports/latest_title.txt)"
+          if gh issue list --state all --search "\"$TITLE\" in:title" --json title -q '.[].title' | grep -qxF "$TITLE"; then
+            echo "Report already posted: $TITLE"
+          else
+            gh issue create --title "$TITLE" --body-file "$(ls -1 reports/*.md | sort | tail -1)" --assignee "${{ github.repository_owner }}"
+          fi
