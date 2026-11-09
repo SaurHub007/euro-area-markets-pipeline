@@ -2,6 +2,8 @@
 
 An end-to-end data pipeline that pulls **euro-area rates, sovereign yields, FX, equity and inflation data** from the **ECB Data Portal API**, validates it, models it as a **star schema**, and feeds a **Power BI dashboard** that refreshes automatically.
 
+**Skills shown:** Python (pandas, NumPy) · SQL · Power BI (DAX, Power Query) · statistics (lead-lag correlation, OLS regression, z-scores) · ETL & data-quality checks · GitHub Actions automation · interactive Chart.js dashboard
+
 ### 🔴 Live dashboard: **[saurhub007.github.io/euro-area-markets-pipeline](https://saurhub007.github.io/euro-area-markets-pipeline/)**
 Click through 4 pages, change the period slicer and hover any chart. It reads the latest pipeline output from this repo, so it updates every time the monthly refresh runs.
 
@@ -68,6 +70,16 @@ dim_series (series_id, series_name, category, unit, ecb_key, is_derived)
 - **Real rates:** the real deposit rate (DFR − HICP) was negative in **106 of 132 months** since 2015.
 - **Equities:** EURO STOXX 50 roughly **doubled** from its 2020 Covid low to above 6,000 in 2026.
 
+## Statistical analysis
+[`stats_analysis.py`](stats_analysis.py) answers three questions a rates / risk desk would ask, and re-runs every month. Full, auto-updated results: [`reports/stats_summary.md`](reports/stats_summary.md).
+
+- **Inflation leads policy:** 12-month changes in HICP inflation line up best with the deposit rate **~15 months later** (r ≈ 0.88, vs ≈ -0.2 with no lag): the ECB reacts with a long delay.
+- **Bund drivers:** an OLS of the 10Y Bund on the deposit rate and inflation gives **R² ≈ 0.82**; each 1 pp of policy rate goes with ~65 bps on the 10Y yield.
+- **Spread risk:** the OAT-Bund spread is at a **z-score of ~+2.9** (highest since 2015), while BTP-Bund and Bono-Bund sit below their long-run average.
+
+![Lead-lag](docs/images/stats_leadlag.png)
+![Spread z-scores](docs/images/stats_spreads.png)
+
 ## Run it
 ```bash
 git clone https://github.com/SaurHub007/euro-area-markets-pipeline.git
@@ -77,6 +89,7 @@ pip install -r requirements.txt
 python run_pipeline.py            # live pull from the ECB API
 python run_pipeline.py --offline  # rebuild from the committed snapshot (no internet)
 python make_charts.py             # regenerate README images
+python stats_analysis.py          # lead-lag, regression, spread z-scores
 pytest -q                         # unit tests
 sqlite3 data/euro_markets.db < sql/analysis_queries.sql
 ```
