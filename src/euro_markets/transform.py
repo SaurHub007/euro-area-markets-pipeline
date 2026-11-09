@@ -27,6 +27,17 @@ def to_monthly(raw: pd.DataFrame) -> pd.DataFrame:
     return wide
 
 
+def drop_incomplete_months(wide: pd.DataFrame, today: pd.Timestamp | None = None) -> pd.DataFrame:
+    """Remove the current (still running) month.
+
+    The refresh runs early in the month, so the current month would be built from
+    only 1-2 days of data and look like a full monthly reading.
+    """
+    today = pd.Timestamp.today() if today is None else pd.Timestamp(today)
+    current_month = today.normalize().replace(day=1)
+    return wide[wide.index < current_month]
+
+
 def add_derived(wide: pd.DataFrame) -> pd.DataFrame:
     """Spreads in basis points and the real policy rate."""
     out = wide.copy()

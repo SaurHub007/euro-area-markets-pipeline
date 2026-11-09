@@ -57,8 +57,13 @@ SERIES = {
     # --- Equity & inflation ---------------------------------------------
     "sx5e": {"name": "EURO STOXX 50 Index", "category": "Equity", "unit": "Index points",
              "key": "FM/M.U2.EUR.DS.EI.DJES50I.HSTA", "aggregation": "mean"},
+    # The old ICP dataset was discontinued on 4 Feb 2026 (last value Dec 2025) and
+    # replaced by the new HICP dataset. We try the new key first and splice in the
+    # old one for history, so the series is continuous from 2015.
     "hicp": {"name": "HICP Inflation (YoY)", "category": "Inflation", "unit": "%",
-             "key": "ICP/M.U2.N.000000.4.ANR", "aggregation": "mean"},
+             "key": "HICP/M.U2.N.000000.4D0.ANR",
+             "fallback_keys": ["HICP/M.U2.N.000000.4F0.ANR", "ICP/M.U2.N.000000.4.ANR"],
+             "aggregation": "mean"},
 }
 
 # Derived analytics series built in transform.py
