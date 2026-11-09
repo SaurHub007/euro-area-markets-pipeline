@@ -79,3 +79,20 @@ def test_monthly_report_labels():
     assert monthly_report.policy_stance(pd.Series([2.5, 2.5])) == "On hold"
     assert monthly_report.curve_status(-10) == "Inverted"
     assert monthly_report.curve_status(42) == "Flat"
+
+
+def test_stats_lead_lag_and_ols():
+    import numpy as np
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    import stats_analysis
+
+    idx = pd.date_range("2015-01-01", periods=80, freq="MS")
+    x = pd.Series(np.sin(np.arange(80) / 6), index=idx)
+    y = x.shift(3)  # y follows x by 3 months
+    ll = stats_analysis.lead_lag(x, y, max_lag=6)
+    assert int(ll.idxmax()) == 3
+
+    X = pd.DataFrame({"a": np.arange(30.0), "b": np.arange(30.0) ** 0.5})
+    beta, r2, n = stats_analysis.ols(1 + 2 * X["a"] + 3 * X["b"], X)
+    assert beta["a"] == pytest.approx(2) and r2 == pytest.approx(1) and n == 30
