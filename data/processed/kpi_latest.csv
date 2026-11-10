@@ -1,20 +1,20 @@
 date_key,series_id,value,mom_change,yoy_change,mom_pct,yoy_pct,series_name,category,unit
-20260901,es10y,3.927,0.292,0.665,,,Spain 10Y Bono Yield,Sovereign Yields,%
-20260901,spread_oat_bund,96.7,15.2,15.0,,,OAT-Bund Spread (FR-DE 10Y),Spreads,bps
-20260901,fr10y,4.44,0.44,0.93,,,France 10Y OAT Yield,Sovereign Yields,%
-20260901,it10y,4.362,0.376,0.803,,,Italy 10Y BTP Yield,Sovereign Yields,%
 20260901,spread_btp_bund,88.9,8.8,2.3,,,BTP-Bund Spread (IT-DE 10Y),Spreads,bps
 20260901,spread_bono_bund,45.4,0.4,-11.5,,,Bono-Bund Spread (ES-DE 10Y),Spreads,bps
+20260901,spread_oat_bund,96.7,15.2,15.0,,,OAT-Bund Spread (FR-DE 10Y),Spreads,bps
 20260901,de10y,3.473,0.288,0.78,,,Germany 10Y Bund Yield,Sovereign Yields,%
-20261001,dfr,2.5,0.0,0.5,,,ECB Deposit Facility Rate,Policy Rates,%
+20260901,es10y,3.927,0.292,0.665,,,Spain 10Y Bono Yield,Sovereign Yields,%
+20260901,fr10y,4.44,0.44,0.93,,,France 10Y OAT Yield,Sovereign Yields,%
+20260901,it10y,4.362,0.376,0.803,,,Italy 10Y BTP Yield,Sovereign Yields,%
 20261001,estr,2.4399,0.1256,0.5131,,,€STR (Euro Short-Term Rate),Money Market,%
-20261001,eurusd,1.1202,-0.0311,-0.0428,-2.7013,-3.6801,EUR/USD,FX,USD per EUR
-20261001,yc10y,3.4523,-0.0371,0.7397,,,Euro AAA Curve 10Y,Yield Curve,%
-20261001,real_dfr,-1.5,-0.2,-1.4,,,Real Deposit Rate (DFR - HICP),Policy Rates,%
+20261001,eurgbp,0.8428,-0.0153,-0.0288,-1.783,-3.3043,EUR/GBP,FX,GBP per EUR
 20261001,hicp,4.0,0.2,1.9,,,HICP Inflation (YoY),Inflation,%
 20261001,spread_2s10s,42.0547,2.7493,-34.9454,,,2s10s Curve Slope,Spreads,bps
-20261001,sx5e,6170.7332,-145.6558,529.6631,-2.306,9.3894,EURO STOXX 50 Index,Equity,Index points
-20261001,eurinr,107.0116,-2.9026,4.1763,-2.6408,4.0612,EUR/INR,FX,INR per EUR
-20261001,eurgbp,0.8428,-0.0153,-0.0288,-1.783,-3.3043,EUR/GBP,FX,GBP per EUR
-20261001,euribor3m,2.6347,-0.0003,0.6003,,,Euribor 3M,Money Market,%
+20261001,eurusd,1.1202,-0.0311,-0.0428,-2.7013,-3.6801,EUR/USD,FX,USD per EUR
 20261001,yc2y,3.0317,-0.0646,1.0891,,,Euro AAA Curve 2Y,Yield Curve,%
+20261001,eurinr,107.0116,-2.9026,4.1763,-2.6408,4.0612,EUR/INR,FX,INR per EUR
+20261001,sx5e,6170.7332,-145.6558,529.6631,-2.306,9.3894,EURO STOXX 50 Index,Equity,Index points
+20261001,yc10y,3.4523,-0.0371,0.7397,,,Euro AAA Curve 10Y,Yield Curve,%
+20261001,dfr,2.5,0.0,0.5,,,ECB Deposit Facility Rate,Policy Rates,%
+20261001,euribor3m,2.6347,-0.0003,0.6003,,,Euribor 3M,Money Market,%
+20261001,real_dfr,-1.5,-0.2,-1.4,,,Real Deposit Rate (DFR - HICP),Policy Rates,%
